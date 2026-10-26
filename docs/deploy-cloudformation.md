@@ -40,10 +40,12 @@ If the `git push` command fails, check the url of `origin` and make sure it poin
 CloudFormation defines a *stack* of AWS resources. For this application we need:
 
 * Three security groups (proxy, Flask, database)
-* Four EC2 instances (database, two Flask servers, proxy)
+* Eight EC2 instances (database, six Flask servers, proxy)
 
 
-The file `deploy/cloudformation.yaml` specifies those resources.
+The file `deploy/cloudformation.yaml` specifies those resources. Each Flask instance runs ten Gunicorn workers, as configured in `deploy/voting.service`.
+
+Before launching, commit and push changes to `scripts/write_nginx_config.py` and `deploy/voting.service` to your GitHub `main` branch. User data clones that branch, so local edits alone do not reach new instances. The proxy expects exactly six running instances tagged `voting-role=flask`. A push does not update code or services on existing instances.
 
 From the root of your clone:
 

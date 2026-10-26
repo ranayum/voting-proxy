@@ -5,15 +5,17 @@ This document describes how the system is deployed and how data moves through th
 
 ## Deployment
 
-Four EC2 instances run the application:
+Eight EC2 instances run the application:
 
 1. **Proxy (nginx)** — the only instance that accepts HTTP from the internet (port 80). nginx forwards each request to a Flask instance. Round-robin is the default: the first request goes to Flask 1, the next to Flask 2, and so on.
-2. **Flask (two instances)** — gunicorn serves the HTTP API and the browser UI on port **5000**.
-3. **Database (DynamoDB Local)** — one Java process holds the `Polls` table on port **8000**. Both Flask instances use the same database (`DYNAMODB_ENDPOINT_URL` in `.env`).
+2. **Flask (six instances)** — Gunicorn runs **10 workers per instance** and serves the HTTP API and the browser UI on port **5000**.
+3. **Database (DynamoDB Local)** — one Java process holds the `Polls` table on port **8000**. All six Flask instances use the same database (`DYNAMODB_ENDPOINT_URL` in `.env`).
 
 
 
 ![Arch](arch.png)
+
+The illustration shows the original two-server deployment. The current configuration uses six Flask instances with ten Gunicorn workers each.
 
 
 The database and Flask instances have a tag **`voting-role`** (`db` or `flask`). Flask and the proxy use the EC2 API (`DescribeInstances`) and that tag to find private IP addresses. They do not have those IPs written into user data.

@@ -1,9 +1,9 @@
 # Overview
 
-This document is the steps to run the voting app on four EC2 instances:
+This document is the steps to run the voting app on eight EC2 instances:
 
 * the **proxy** (nginx)
-* **two Flask servers**, launched at the same time
+* **six Flask servers**, launched at the same time
 * a **database** server (DynamoDB Local)
 
 
@@ -82,7 +82,7 @@ The following steps will create a security group that will allow access to the F
 
 ### `voting-db`
 
-The following steps will create a security group that will allow access to the database server via ports 22 (SSH) and 8000 (to access DynamoDB Local on that port). In this case, we will only allow SSH access from the `voting-proxy` security group (i.e. only from the proxy), and we will only allow DB access from the `voting-flask` security group (i.e. from the two Flask servers).
+The following steps will create a security group that will allow access to the database server via ports 22 (SSH) and 8000 (to access DynamoDB Local on that port). In this case, we will only allow SSH access from the `voting-proxy` security group (i.e. only from the proxy), and we will only allow DB access from the `voting-flask` security group (i.e. from the six Flask servers).
 
 
 * In the EC2 console, open **Security Groups**.
@@ -111,7 +111,7 @@ The following table summarizes the special aspects of each machine:
 | Launch order | Type | `voting-role` Tag | IAM instance profile |
 |--------------|----------|------|---------------|
 | 1 | Database | `db` | (none) |
-| 2 | Flask (x2) | `flask` | **LabInstanceProfile** |
+| 2 | Flask (x6) | `flask` | **LabInstanceProfile** |
 | 3 | Proxy (nginx) | None | **LabInstanceProfile** |
 
 
@@ -139,11 +139,11 @@ a `voting-role` tag.
 
 ### Launch the Flask servers
 
-Launch the two Flask servers after the database is running. They have a `voting-role` tag, and they use the `LabInstanceProfile` role.
+Launch the six Flask servers after the database is running. They have a `voting-role` tag, and they use the `LabInstanceProfile` role.
 
 
 * In the EC2 console, click **Launch an instance**.
-* In the **Summary** panel on the right, set **Number of instances** to **2**.
+* In the **Summary** panel on the right, set **Number of instances** to **6**.
 * Set **Name** as `voting-flask`.
 * Under **Name and tags**, click **Add additional tags** and then **Add new Tag**.
   * Key: `voting-role`
